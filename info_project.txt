@@ -1,0 +1,9 @@
+nome user => PavelWebDeveloper
+
+Chiave API
+e2acc82b5ea3362735d7f317dd66428f
+
+
+API
+prove con postman
+

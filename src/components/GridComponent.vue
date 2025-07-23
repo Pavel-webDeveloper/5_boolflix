@@ -1,7 +1,7 @@
 <template>
     <section>
-        <input type="text" v-model="textInput">
-        <button @click="search(textInput)">Cerca</button>
+        <!-- <input type="text" v-model="textInput">
+        <button @click="search(textInput)">Cerca</button> -->
 
 
         <!-- FILM E SERIE TV DATI DALLA RICERCA -->
@@ -50,15 +50,114 @@
         </div> -->
 
 
-        <!-- FILM POPOLARI -->
-        <div class="container-film">
-            <h1>Popolari</h1>
-            <ul>
-                <li v-for="film in listaNovita" :key="film.id" @click="search(film.title), searchFilm(film.id)">
-                    <!-- {{ film.original_title }} -->
-                        {{ film.title }}
-                </li>
-            </ul>
+    <!-- CONTAINER LISTA FILM -->
+        <div class="grid-container">
+
+            <!-- FILM IN ARRIVO -->
+            <div class="grid-list">
+                <div class="title-list">
+                    <h2><em>FILM IN ARRIVO</em></h2>
+                </div>
+                <div class="my-griglia">
+                     <div class="my-box" v-for="film in listaFilmInArrivo" :key="film.id" @click="search(film.title), searchFilm(film.id)">
+                        <div class="image-container">
+                            <img :src="pathImg + film.poster_path" alt="">
+                        </div>
+                        <div class="my-description" :style="{ bottom: film.overview.length === 0 ? '-38px' : '-135px' }">
+                            <h3>{{ film.title }}</h3>
+                            <p>
+                                <span v-if="film.overview.length > 0"><strong>Trama :</strong></span> <br/>
+                                <em>{{ film.overview.slice(0, 250) }}</em>
+                                <span v-if="film.overview.length > 250">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- adult: false
+            backdrop_path: "/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
+            first_air_date: "2008-01-20"
+            genre_ids: [18, 80]
+            id: 1396
+            name: "Breaking Bad"
+            origin_country: ["US"]
+            original_language: "en"
+            original_name: "Breaking Bad"
+            overview: "Un insegnante di chimica con un cancro allo stadio terminale comincia a produrre e spacciare metanfetamina con un suo ex studente per assicurare un futuro alla famiglia."
+            popularity: 168.758
+            poster_path: "/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg"
+            vote_average: 8.925
+            vote_count: 15822 -->
+
+            <!-- SERIE TV piu' votate -->
+            <div class="grid-list">
+                <div class="title-list">
+                    <h2><em>LE SERIE TV PIU' VOTATE</em></h2>
+                </div>
+                <div class="my-griglia">
+                     <div class="my-box" v-for="serie in serieTvVotati" :key="serie.id">
+                        <div class="image-container">
+                            <img :src="pathImg + serie.poster_path" alt="">
+                        </div>
+                        <div class="my-description" :style="{ bottom: serie.overview.length === 0 ? '-38px' : '-135px' }">
+                            <h3>{{ serie.name }}</h3>
+                            <p>
+                                <span v-if="serie.overview.length > 0"><strong>Trama :</strong></span> <br/>
+                                <em>{{ serie.overview.slice(0, 250) }}</em>
+                                <span v-if="serie.overview.length > 250">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SERIE TV POPOLARE -->
+            <div class="grid-list">
+                <div class="title-list">
+                    <h2><em>SERIE TV POPOLARE</em></h2>
+                </div>
+                <div class="my-griglia">
+                     <div class="my-box" v-for="serie in serieTvPopolare" :key="serie.id">
+                        <div class="image-container">
+                            <img :src="pathImg + serie.poster_path" alt="">
+                        </div>
+                        <div class="my-description" :style="{ bottom: serie.overview.length === 0 ? '-38px' : '-135px' }">
+                            <h3>{{ serie.name }}</h3>
+                            <p>
+                                <span v-if="serie.overview.length > 0"><strong>Trama :</strong></span> <br/>
+                                <em>{{ serie.overview.slice(0, 250) }}</em>
+                                <span v-if="serie.overview.length > 250">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILM DI TENDENZA -->
+            <div class="grid-list">
+                <div class="title-list">
+                    <h2><em>FILM DI TENDENZA</em></h2>
+                </div>
+                <div class="my-griglia">
+                     <div class="my-box" v-for="film in listaFilmTendenza" :key="film.id" @click="search(film.title), searchFilm(film.id)">
+                        <div class="image-container">
+                            <img :src="pathImg + film.poster_path" alt="">
+                        </div>
+                        <div class="my-description" :style="{ bottom: film.overview.length === 0 ? '-38px' : '-135px' }">
+                            <h3>{{ film.title }}</h3>
+                            <p>
+                                <span v-if="film.overview.length > 0"><strong>Trama :</strong></span> <br/>
+                                <em>{{ film.overview.slice(0, 250) }}</em>
+                                <span v-if="film.overview.length > 250">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
 
         
@@ -77,111 +176,189 @@ export default {
             typePath: "",
             apiKey: "?api_key=e2acc82b5ea3362735d7f317dd66428f",
             queryString: "&query=",
-            textInput: "",
             language: "it-It",
 
+            // film 
             listaFilm: [],
             listaSerie: [],
-            listaNovita: [],
+            listaFilmTendenza: [],
+            listaFilmInArrivo: [],
+
+            // serie tv
+            serieTvPopolare: [],        //tv/popular
+            serieTvVotati: [],          //top_rated
+
+
+
+
             filmSelezionato: null,
             sagaFilm: null,
             sagaFilmName: null,
+            pathImg: "https://image.tmdb.org/t/p/w500",
+            lingua: "&language=it-IT",
+
+            // elemento leggibile da tutti i componenti
+            textInput: "",
         }
     },
     methods: {
-        // generaStelle(voto) {
-        //     const stellePiene = Math.floor(voto);
-        //     const haMezzaStella = voto % 1 >= 0.5;
-        //     const stelleVuote = 5 - stellePiene - (haMezzaStella ? 1 : 0);
 
-        //     let risultato = '★'.repeat(stellePiene);       // Stelle piene
-        //     if (haMezzaStella) risultato += '☆';           // Mezza stella (o puoi usare 🌓, ◐)
-        //     risultato += '☆'.repeat(stelleVuote);          // Stelle vuote
-
-        //     return risultato;
-
-            // <span class="fa fa-star checked"></span>   <!-- Stella piena -->
-            // <span class="fa fa-star-half-o checked"></span> <!-- Mezza stella -->
-            // <span class="fa fa-star"></span>           <!-- Stella vuota -->
-
-            // <!-- Aggiungi lo stile CSS -->
-            // <style>
-            // .checked {
-            //     color: gold;
-            // }
-            // </style>
-
-        // }
-
-        search(nome = ""){
-            if(nome === ""){
-                console.log("vuoto");
-                return;
-            }
-        
-            this.typePath = "search/movie";
-            this.textInput = nome;
-            axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + this.textInput + "&language=" + this.language)
-            .then((res)=>{
-                // console.log(res.data.results, "array results film");
-                // console.log(res.data.total_results, "risultati trovati film");
-                
-                this.listaFilm = res.data.results;
-
-                this.typePath = "search/tv";
+        // CERCO UN FILM IN BASE AL TITOLO IMMESSO DALL'UTENTE
+            search(nome = ""){
+                if(nome === ""){
+                    console.log("vuoto");
+                    return;
+                }
+            
+                this.typePath = "search/movie";
+                this.textInput = nome;
                 axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + this.textInput + "&language=" + this.language)
                 .then((res)=>{
-                    // console.log(res.data.results, "array results serie");
-                    // console.log(res.data.total_results, "risultati trovati serie");
-                    
-                    this.listaSerie = res.data.results;
-                });
-            }).finally(()=>{
-                this.textInput = "";
-            });
-        },
-
-        searchFilm(id){
-            this.typePath = "movie/";
-            axios.get(this.urlPath + this.typePath + id + this.apiKey)
-            .then((res)=>{
-                console.log(res.data, "filmSelezionato");  
-                this.filmSelezionato = res.data;
-
-                if(this.filmSelezionato.belongs_to_collection === null){
-                    this.sagaFilm = null;
-                }else {
-
-                    // https://api.themoviedb.org/3/collection/{collection_id}
-                    this.typePath = "collection/";
-                    let collection_id = this.filmSelezionato.belongs_to_collection.id;
-                    axios.get(this.urlPath + this.typePath + collection_id + this.apiKey)
+                    // console.log(res.data.results, "array results film");
+                    // console.log(res.data.total_results, "risultati trovati film");
+                    this.listaFilm = res.data.results;
+                    this.typePath = "search/tv";
+                    axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + this.textInput + "&language=" + this.language)
                     .then((res)=>{
-                        console.log(res, "collection");
-                        this.sagaFilmName = res.data.name;
-                        this.sagaFilm = res.data.parts;
-                        console.log(this.sagaFilm, "sagaFilm");
-                    })
+                        // console.log(res.data.results, "array results serie");
+                        // console.log(res.data.total_results, "risultati trovati serie");
+                        
+                        this.listaSerie = res.data.results;
+                    });
+                }).finally(()=>{
+                    this.textInput = "";
+                });
+            },
+
+
+        // PRENDO IL FILM DATO L'ID
+            searchFilm(id){
+                this.typePath = "movie/";
+                axios.get(this.urlPath + this.typePath + id + this.apiKey)
+                .then((res)=>{
+                    console.log(res.data, "filmSelezionato");  
+                    this.filmSelezionato = res.data;
+
+                    if(this.filmSelezionato.belongs_to_collection === null){
+                        this.sagaFilm = null;
+                    }else {
+
+                        // https://api.themoviedb.org/3/collection/{collection_id}
+                        this.typePath = "collection/";
+                        let collection_id = this.filmSelezionato.belongs_to_collection.id;
+                        axios.get(this.urlPath + this.typePath + collection_id + this.apiKey)
+                        .then((res)=>{
+                            console.log(res, "collection");
+                            this.sagaFilmName = res.data.name;
+                            this.sagaFilm = res.data.parts;
+                            console.log(this.sagaFilm, "sagaFilm");
+                        })
+                    }
+                })
+            },
+
+
+            // CHIAMATA GENERICA 
+                chiamataApi(path, nomeArray){
+                    axios.get(this.urlPath + path + this.apiKey + this.lingua)
+                    .then((res)=>{
+                        console.log(res.data.results, "array nomeArray");
+                        // console.log(res.data.total_results, "risultati trovati novità");
+                        this[nomeArray] = res.data.results;
+                        console.log(nomeArray, "destinazione");
+                    });
                 }
-            })
-        },
     },
     mounted(){
 
-        // DI TENDENZA POPOLARI
-        this.typePath = "trending/movie/day";
-        axios.get(this.urlPath + this.typePath + this.apiKey)
-        .then((res)=>{
-            // console.log(res.data.results, "array results novità");
-            // console.log(res.data.total_results, "risultati trovati novità");
-            
-            this.listaNovita = res.data.results;
-        });
+        // film
+        this.chiamataApi('trending/movie/day', 'listaFilmTendenza');
+        this.chiamataApi('movie/upcoming', 'listaFilmInArrivo');
+        
+
+        // serieTv
+        this.chiamataApi('tv/popular', 'serieTvPopolare');
+        this.chiamataApi('tv/top_rated', 'serieTvVotati');
+
+      
     }
 }
 </script>
 
 <style lang="scss">
+@import '../style/generals.scss';
+
+    .grid-container {
+        padding-left: 40px;
+        margin-top: 200px;
+
+        .grid-list {
+            overflow-x: scroll;
+            margin-bottom: 50px;
+            // ::-webkit-scrollbar {
+            //     display: none;
+            // }
+             scrollbar-width: none;       /* Firefox */
+            // -ms-overflow-style: none;    /* Edge */
+
+            .title-list {
+                height: 39px;
+            }
+        }
+        
+        .my-griglia {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 50px;
+            transition: margin-bottom 2s;
+            &:hover {
+                margin-bottom: 200px;
+            }
+        }
+        
+        .my-box {
+            flex-shrink: 0;
+            cursor: pointer;
+            position: relative;
+            transition: margin 1.5s;
+            overflow: visible;
+            height: 300px;
+    
+            &:hover {
+                .my-description {
+                    opacity: 1;
+                }
+            }
+            .image-container {
+                height: 100%;
+                img {
+                    height: 100%;
+                    transition: 1s;
+                }
+            }
+
+            &:hover img {
+                transform: scaleX(2.5);
+            }
+            &:hover {
+                margin:0 150px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+
+                .my-description {
+                    width: 500px;
+                    color: white;
+                    position: absolute;
+                    bottom: -135px;
+                    left: -150px;
+                    padding: 0 20px;
+                    opacity: 0;
+                    transition: opacity 2s;
+                }
+        }
+
+
+    }
 
 </style>
 

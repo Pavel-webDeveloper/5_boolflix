@@ -54,7 +54,7 @@
         <div class="grid-container">
 
             <!-- FILM IN ARRIVO -->
-            <div class="grid-list">
+            <!-- <div class="grid-list">
                 <div class="title-list">
                     <h2><em>FILM IN ARRIVO</em></h2>
                 </div>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- adult: false
             backdrop_path: "/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
@@ -91,7 +91,7 @@
             vote_count: 15822 -->
 
             <!-- SERIE TV piu' votate -->
-            <div class="grid-list">
+            <!-- <div class="grid-list">
                 <div class="title-list">
                     <h2><em>LE SERIE TV PIU' VOTATE</em></h2>
                 </div>
@@ -110,120 +110,103 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <!-- SERIE TV POPOLARE -->
-            <div class="grid-list">
-                <div class="title-list">
-                    <h2><em>SERIE TV POPOLARE</em></h2>
-                </div>
-                <div class="my-griglia">
-                     <div class="my-box" v-for="serie in serieTvPopolare" :key="serie.id">
-                        <div class="image-container">
-                            <img :src="pathImg + serie.poster_path" alt="">
-                        </div>
-                        <div class="my-description" :style="{ bottom: serie.overview.length === 0 ? '-38px' : '-135px' }">
-                            <h3>{{ serie.name }}</h3>
-                            <p>
-                                <span v-if="serie.overview.length > 0"><strong>Trama :</strong></span> <br/>
-                                <em>{{ serie.overview.slice(0, 250) }}</em>
-                                <span v-if="serie.overview.length > 250">...</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FILM DI TENDENZA -->
-            <div class="grid-list">
-                <div class="title-list">
-                    <h2><em>FILM DI TENDENZA</em></h2>
-                </div>
-                <div class="my-griglia">
-                     <div class="my-box" v-for="film in listaFilmTendenza" :key="film.id" @click="search(film.title), searchFilm(film.id)">
-                        <div class="image-container">
-                            <img :src="pathImg + film.poster_path" alt="">
-                        </div>
-                        <div class="my-description" :style="{ bottom: film.overview.length === 0 ? '-38px' : '-135px' }">
-                            <h3>{{ film.title }}</h3>
-                            <p>
-                                <span v-if="film.overview.length > 0"><strong>Trama :</strong></span> <br/>
-                                <em>{{ film.overview.slice(0, 250) }}</em>
-                                <span v-if="film.overview.length > 250">...</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
 
 
+            
+           
+            <grid-list-component :listaVideo="listaFilmCercati" :titolo="'FILM CORRELATI'" :tipologia="'film'" @cercaTitolo="search" v-if="listaFilmCercati.length > 1"/>
+            <grid-list-component :listaVideo="sagaFilm" :titolo="sagaFilmName" :tipologia="'film'" @cercaTitolo="search" v-if="sagaFilm != null"/>
+            <grid-list-component :listaVideo="listaSerieCercati" :titolo="'SERIE TV POTREBBE INTERESSARTI ANCHE...'" :tipologia="'serieTv'" v-if="listaSerieCercati.length > 0"/>
+            <grid-list-component :listaVideo="listaFilmSelezionati" :titolo="'FILM SELEZIONATI IN PRECEDENZA'" :tipologia="'film'" v-if="listaFilmSelezionati.length > 1"/>
 
+            <grid-list-component :listaVideo="listaFilmInArrivo" :titolo="'FILM IN ARRIVO'" :tipologia="'film'" @cercaTitolo="search"/>
+            <grid-list-component :listaVideo="listaFilmTendenza" :titolo="'FILM DI TENDENZA'" :tipologia="'film'" @cercaTitolo="search"/>
+            <grid-list-component :listaVideo="serieTvVotati" :titolo="'LE SERIE TV PIU VOTATE'" :tipologia="'serieTv'"/>
+            <grid-list-component :listaVideo="serieTvPopolare" :titolo="'SERIE TV POPOLARE'" :tipologia="'serieTv'"/>
         </div>
 
-        
     </section>
 </template>
 
 <script>
 import axios from 'axios';
+import GridListComponent from './GridListComponent.vue';
+
 
 
 export default {
     name: "GridComponent",
+    components: {
+        GridListComponent,
+    },
     data(){
         return {
+            // costruzione per le chiamate
             urlPath: "https://api.themoviedb.org/3/",
             typePath: "",
             apiKey: "?api_key=e2acc82b5ea3362735d7f317dd66428f",
             queryString: "&query=",
-            language: "it-It",
+            language: "&language=it-IT",
 
-            // film 
-            listaFilm: [],
-            listaSerie: [],
-            listaFilmTendenza: [],
+            // liste film da mostrare in pagina al caricamento
             listaFilmInArrivo: [],
-
-            // serie tv
+            listaFilmTendenza: [],
             serieTvPopolare: [],        //tv/popular
             serieTvVotati: [],          //top_rated
+            
+
+            // l'elemento deve essere leggibile da tutti i componenti
+            textInput: "",
+
+            // elementi ritornati in base al titolo inserito nella casella di input
+            listaFilmCercati: [],
+            listaSerieCercati: [],
 
 
-
-
+            // se clicco su un film devo ritornare quel film per id, e relative sage
+            listaFilmSelezionati: [],
             filmSelezionato: null,
             sagaFilm: null,
             sagaFilmName: null,
-            pathImg: "https://image.tmdb.org/t/p/w500",
-            lingua: "&language=it-IT",
+            listaFilmSimili: [],
 
-            // elemento leggibile da tutti i componenti
-            textInput: "",
         }
     },
     methods: {
 
         // CERCO UN FILM IN BASE AL TITOLO IMMESSO DALL'UTENTE
-            search(nome = ""){
-                if(nome === ""){
-                    console.log("vuoto");
+            search(elmTitle = ""){
+                if(elmTitle === ""){
+                    // console.log("vuoto");
                     return;
                 }
+            console.log(elmTitle, 'search');
             
                 this.typePath = "search/movie";
-                this.textInput = nome;
-                axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + this.textInput + "&language=" + this.language)
+                // this.textInput = elmTitle;
+                axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + elmTitle + this.language)
                 .then((res)=>{
                     // console.log(res.data.results, "array results film");
                     // console.log(res.data.total_results, "risultati trovati film");
-                    this.listaFilm = res.data.results;
+                    this.listaFilmCercati = res.data.results;
+                    let filmCercato = res.data.results[0];
+                    console.log(filmCercato);
+                    // some scorre l array e restituisce vero se trova la condizione
+                    if( !this.listaFilmSelezionati.some( film => film.id === filmCercato.id) ){
+                        this.listaFilmSelezionati.push(filmCercato);
+                        // console.log(this.listaFilmSelezionati, "listaFilmCercati");
+                    }
+                    this.searchFilm(filmCercato.id);
                     this.typePath = "search/tv";
-                    axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + this.textInput + "&language=" + this.language)
+                    axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + elmTitle + this.language)
                     .then((res)=>{
                         // console.log(res.data.results, "array results serie");
                         // console.log(res.data.total_results, "risultati trovati serie");
                         
-                        this.listaSerie = res.data.results;
+                        this.listaSerieCercati = res.data.results;
                     });
                 }).finally(()=>{
                     this.textInput = "";
@@ -260,12 +243,11 @@ export default {
 
             // CHIAMATA GENERICA 
                 chiamataApi(path, nomeArray){
-                    axios.get(this.urlPath + path + this.apiKey + this.lingua)
+                    axios.get(this.urlPath + path + this.apiKey + this.language)
                     .then((res)=>{
-                        console.log(res.data.results, "array nomeArray");
                         // console.log(res.data.total_results, "risultati trovati novità");
                         this[nomeArray] = res.data.results;
-                        console.log(nomeArray, "destinazione");
+                        // console.log(nomeArray, "nome array");
                     });
                 }
     },
@@ -288,76 +270,11 @@ export default {
 <style lang="scss">
 @import '../style/generals.scss';
 
-    .grid-container {
+    section {
         padding-left: 40px;
-        margin-top: 200px;
-
-        .grid-list {
-            overflow-x: scroll;
-            margin-bottom: 50px;
-            // ::-webkit-scrollbar {
-            //     display: none;
-            // }
-             scrollbar-width: none;       /* Firefox */
-            // -ms-overflow-style: none;    /* Edge */
-
-            .title-list {
-                height: 39px;
-            }
+        .grid-container {
+            margin-top: 200px;
         }
-        
-        .my-griglia {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 50px;
-            transition: margin-bottom 2s;
-            &:hover {
-                margin-bottom: 200px;
-            }
-        }
-        
-        .my-box {
-            flex-shrink: 0;
-            cursor: pointer;
-            position: relative;
-            transition: margin 1.5s;
-            overflow: visible;
-            height: 300px;
-    
-            &:hover {
-                .my-description {
-                    opacity: 1;
-                }
-            }
-            .image-container {
-                height: 100%;
-                img {
-                    height: 100%;
-                    transition: 1s;
-                }
-            }
-
-            &:hover img {
-                transform: scaleX(2.5);
-            }
-            &:hover {
-                margin:0 150px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            }
-
-                .my-description {
-                    width: 500px;
-                    color: white;
-                    position: absolute;
-                    bottom: -135px;
-                    left: -150px;
-                    padding: 0 20px;
-                    opacity: 0;
-                    transition: opacity 2s;
-                }
-        }
-
-
     }
 
 </style>

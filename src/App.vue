@@ -1,33 +1,38 @@
 <template>
   <div id="app">
-    <header>
+    <intro-component v-if="state.loading" />
+    <header v-if="state.loading === false">
       <div class="logo">
         <img src="../public/img/logo_boolflix_modificato.png" alt="">
       </div>
       <nav-bar-component />
     </header>
 
-    <main>
+    <main v-if="state.loading === false">
       <grid-component />
     </main>
-
-    <footer>
-
-    </footer>
     
   </div>
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import state from './store.js';
+import IntroComponent from './components/IntroComponent.vue';
 import GridComponent from './components/GridComponent.vue';
 import NavBarComponent from './components/NavBarComponent.vue';
 
 export default {
   name: 'App',
   components: {
+    IntroComponent,
     NavBarComponent,
     GridComponent
-
+  },
+  data(){
+    return {
+      state
+    }
   }
 }
 </script>

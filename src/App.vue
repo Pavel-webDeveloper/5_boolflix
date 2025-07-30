@@ -72,5 +72,22 @@ export default {
     //   --bs-body-color: #fff;
     // }
   }
+  @media (max-width: 768px) {
+    #app {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .logo {
+          margin-right: 0;
+          height: 80%;
+
+          img {
+            object-fit: contain;
+          }
+        }
+      }
+    }
+  }
 
 </style>

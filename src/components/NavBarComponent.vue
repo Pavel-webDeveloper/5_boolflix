@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Recipient’s username" aria-label="Recipient’s username" aria-describedby="button-addon2" v-model="searchInput" @keyup.enter="cercaInput">
+            <input type="text" class="form-control" placeholder="Cerca un film per titolo" aria-label="cerca un film per titolo" aria-describedby="button-addon2" v-model="searchInput" @keyup.enter="cercaInput">
             <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="cercaInput">cerca</button>
         </div>
     </nav>
@@ -88,6 +88,12 @@ export default {
                 color: red;
                 transform: scale(1.2);
             }
+        }
+    }
+
+     @media (max-width: 768px) {
+        .navbar-expand-lg {
+            width: 100% !important;
         }
     }
 

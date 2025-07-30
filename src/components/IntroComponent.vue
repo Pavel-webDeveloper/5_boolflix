@@ -70,5 +70,10 @@ export default {
     transition: opacity 1s ease-in;
   }
 
+  @media (max-width: 768px) {
+    span {
+        font-size: 50px !important;
+    }
+  }
 
 </style>

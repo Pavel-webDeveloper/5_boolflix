@@ -21,11 +21,13 @@ export default {
       if (this.i < this.boolflixText.length) {
         this.$refs.typing.innerHTML += this.boolflixText.charAt(this.i);
         this.i++;
-        setTimeout(this.typeWriter, 800);
+        setTimeout(this.typeWriter, 500);
       }else {
         setTimeout(() => {
           this.$refs.typing.classList.add('fade-out');
-          state.loading = false;
+            setTimeout(() => {
+            state.loading = false;
+          }, 2000);
         }, 1000);
       }
     }

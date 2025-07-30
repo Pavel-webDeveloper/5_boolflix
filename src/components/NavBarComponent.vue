@@ -44,6 +44,7 @@ export default {
         cercaInput(){
             state.setInput(this.searchInput);
             console.log(state.getInput(), "getInput");
+            this.searchInput = "";
         }
     }
 }

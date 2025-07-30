@@ -4,6 +4,7 @@
     <!-- CONTAINER LISTA FILM -->
         <div class="grid-container">
 
+            <p class="failed" v-if="failed">La tua ricerca "{{ userInput }}"" non ha prodotto risultati</p>
             <grid-list-component :listaVideo="listaFilmCercati" :titolo="'FILM CORRELATI'" :tipologia="'film'" @cercaTitolo="search" v-if="listaFilmCercati.length > 1"/>
             <grid-list-component :listaVideo="sagaFilm" :titolo="sagaFilmName" :tipologia="'film'" @cercaTitolo="search" v-if="sagaFilm != null"/>
             <grid-list-component :listaVideo="listaSerieCercati" :titolo="'SERIE TV POTREBBE INTERESSARTI ANCHE...'" :tipologia="'serieTv'" v-if="listaSerieCercati.length > 0"/>
@@ -61,6 +62,8 @@ export default {
             sagaFilmName: null,
             listaFilmSimili: [],
 
+            // se la ricerca non produce risultati
+            failed: false,
         }
     },
     methods: {
@@ -79,25 +82,32 @@ export default {
                 .then((res)=>{
                     // console.log(res.data.results, "array results film");
                     // console.log(res.data.total_results, "risultati trovati film");
-                    this.listaFilmCercati = res.data.results;
-                    let filmCercato = res.data.results[0];
-                    console.log(filmCercato);
-                    // some scorre l array e restituisce vero se trova la condizione
-                    if( !this.listaFilmSelezionati.some( film => film.id === filmCercato.id) ){
-                        this.listaFilmSelezionati.push(filmCercato);
-                        // console.log(this.listaFilmSelezionati, "listaFilmCercati");
+                    if(res.data.results.length > 0) {
+                        this.failed = false;
+
+                        this.listaFilmCercati = res.data.results;
+                        let filmCercato = res.data.results[0];
+                        console.log(filmCercato);
+                        // some scorre l array e restituisce vero se trova la condizione
+                        if( !this.listaFilmSelezionati.some( film => film.id === filmCercato.id) ){
+                            this.listaFilmSelezionati.push(filmCercato);
+                            // console.log(this.listaFilmSelezionati, "listaFilmCercati");
+                        }
+                        this.searchFilm(filmCercato.id);
+                        this.typePath = "search/tv";
+                        axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + elmTitle + this.language)
+                        .then((res)=>{
+                            // console.log(res.data.results, "array results serie");
+                            // console.log(res.data.total_results, "risultati trovati serie");
+                            
+                            this.listaSerieCercati = res.data.results;
+                        });
                     }
-                    this.searchFilm(filmCercato.id);
-                    this.typePath = "search/tv";
-                    axios.get(this.urlPath + this.typePath + this.apiKey + this.queryString + elmTitle + this.language)
-                    .then((res)=>{
-                        // console.log(res.data.results, "array results serie");
-                        // console.log(res.data.total_results, "risultati trovati serie");
-                        
-                        this.listaSerieCercati = res.data.results;
-                    });
+                    else {
+                        this.failed = true;
+                    }
                 }).finally(()=>{
-                    this.textInput = "";
+                    // state.textInput = "";
                     window.scrollTo({
                         top: 0,
                         behavior: 'smooth' // Effetto di scorrimento fluido
@@ -174,6 +184,10 @@ export default {
 
 <style lang="scss">
 @import '../style/generals.scss';
+
+    .failed {
+        font-size: 30px;
+    }
 
     section {
         padding-left: 40px;
